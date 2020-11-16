@@ -23,11 +23,11 @@ architecture behavior of Sachin_control is
                         ALUSRC <= '0';
                         MEMTOREG <= '0';
                         REGWRITE <= '1';
-                        MEMREAD <= '0';
+                        MEMREAD <= '-';
                         MEMWRITE <= '0';
                         BRANCH <= '0';
                         JUMP <= '0';
-                        ALUOP <= "11";
+                        ALUOP <= "10";
 
                     when "100011" =>   -- load word
                         REGDST <= '0';
@@ -56,7 +56,7 @@ architecture behavior of Sachin_control is
                         ALUSRC <= '0';
                         MEMTOREG <= '-';
                         REGWRITE <= '0';
-                        MEMREAD <= '0';
+                        MEMREAD <= '-';
                         MEMWRITE <= '0';
                         BRANCH <= '1';
                         JUMP <= '0';
@@ -67,11 +67,11 @@ architecture behavior of Sachin_control is
                         ALUSRC <= '-';
                         MEMTOREG <= '-';
                         REGWRITE <= '0';
-                        MEMREAD <= '0';
+                        MEMREAD <= '-';
                         MEMWRITE <= '0';
-                        BRANCH <= '0';
+                        BRANCH <= '-';
                         JUMP <= '1';
-                         ALUOP <= "--";
+                        ALUOP <= "--";
 
                     when others => 
                         REGDST <= '-';

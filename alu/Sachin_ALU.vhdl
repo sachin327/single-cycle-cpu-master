@@ -29,16 +29,16 @@ architecture structure of Sachin_ALU is
                     when "0001" => -- addition 
                         result := std_logic_vector(signed(X) + signed(Y));
 
-                    when "0010" => -- subtraction 
+                    when "0110" => -- subtraction 
                         result := std_logic_vector(signed(X) - signed(Y));
+                   
+                    when "0000" => -- and 
+                        result := std_logic_vector(signed(X) and signed(Y));
 
-                    when "1001" => -- shift left logical 
-                        result := std_logic_vector(signed(Y) sll to_integer(unsigned(SHAMT)));
+		    when "0001" => -- or
+                        result := std_logic_vector(signed(X) or signed(Y));
 
-                    when "1010" =>-- shift right logical 
-                        result := std_logic_vector(signed(Y) srl to_integer(unsigned(SHAMT)));
-
-                    when "1101" => -- set on less than
+                    when "0111" => -- set on less than
                         if signed(X) < signed(Y) then
                             result := X"00000001";
                         else 
