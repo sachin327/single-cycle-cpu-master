@@ -36,90 +36,90 @@ architecture structure of Sachin_singleCycleCPU is
 
     begin
         -- component instantiation
-        clock : AlvarezPajaro_1HzClock2
+        clock : Sachin_1HzClock2
             port map(CLK_50MHZ => CLK, CLK_1HZ => clockSignal);
 
-        shiftRegister : AlvarezPajaro_shiftRegister2
+        shiftRegister : Sachin_shiftRegister2
             port map(SHIFT => SHIFT, CLK => clockSignal, LOAD => LOAD, Q => loadMemory);
 
-        pc : AlvarezPajaro_programCounter
+        pc : Sachin_programCounter
             port map(CLK => clockSignal, RESET => RESET, A => nextInstruction, PC => instructionAddress);
 
-        instructionMemory : AlvarezPajaro_128x8InstructionMemory
+        instructionMemory : Sachin_128x8InstructionMemory
             port map(CLK => clockSignal, MEMWRITE => writeInstructionMemory, RDADDRESS => instructionAddress, WRADDRESS => WRADDRESS, WRDATA => loadMemory, INSTRUCTION => instruction);
 
-        mux1 : AlvarezPajaro_5bit2to1Multiplexer
+        mux1 : Sachin_5bit2to1Mux
             port map(SEL => registerDestination, A => instruction(20 downto 16), B => instruction(15 downto 11), O => temporal2);
 
-        mux2 : AlvarezPajaro_5bit2to1Multiplexer
+        mux2 : Sachin_5bit2to1Mux
             port map(SEL => jumpAndLink, A => temporal2, B => "11111", O => destination);
 
-        registerFile : AlvarezPajaro_3PortRegisterFile3
+        registerFile : Sachin_3PortRegisterFile3
             port map(REGWR => registerWrite, CLK => clockSignal, RD => destination, RS => instruction(25 downto 21), RT => instruction(20 downto 16), WRDATA => toRegisterFile, LO => lower, HI => high, RDATA1 => readData1, RDATA2 => readData2, RV => returnValue);
 
-        mux3 : AlvarezPajaro_32bit2to1Multiplexer
+        mux3 : Sachin_32bit2to1Mux
             port map(SEL => aluSource, A => readData2, B => operand, O => source2);
 
-        alu : AlvarezPajaro_ALU
+        alu : Sachin_ALU
             port map(OPCODE => operationCode, SHAMT => instruction(10 downto 6), X => readData1, Y => source2, Z => zeroFlag, R => aluResult, LO => lower, HI => high);
 
-        dataMemory : AlvarezPajaro_256x8DataMemory
+        dataMemory : Sachin_256x8DataMemory
             port map(CLK => clockSignal, MEMREAD => memoryRead, MEMWRITE => writeDataMemory, ADDRESS => writeReadAddress, WRDATA => loadData, DATAOUT => dataOut);
 
         -- to register file
-        mux4 : AlvarezPajaro_32bit2to1Multiplexer
+        mux4 : Sachin_32bit2to1Mulx
             port map(SEL => memoryToRegister, A => aluResult, B => dataOut, O => temporal3);
 
-        mux5 : AlvarezPajaro_32bit2to1Multiplexer
+        mux5 : Sachin_32bit2to1Mulx
             port map(SEL => jumpAndLink, A => temporal3, B => nextSequentialInstruction, O => toRegisterFile);            
 
-        control : AlvarezPajaro_control
+        control : Sachin_control
             port map(OPCODE => instruction(31 downto 26), REGDST => registerDestination, ALUSRC => aluSource, MEMTOREG => memoryToRegister, REGWRITE => registerWrite, MEMREAD => memoryRead, MEMWRITE => memoryWrite, BRANCH => branch, JUMP => jump, JPLINK => jumpAndLink, JUMPRST => jumpRegister, ALUOP => aluOperation);
 
-        aluControl : AlvarezPajaro_ALUcontrol
+        aluControl : Sachin_ALUcontrol
             port map(ALUOP => aluOperation, FUNCT => instruction(5 downto 0), OPCODE => operationCode);
 
-        adder1 : AlvarezPajaro_32bitAdder
+        adder1 : Sachin_32bitAdder
             port map(X => instructionAddress, Y => offset, SUM => nextSequentialInstruction);
 
-        adder2 : AlvarezPajaro_32bitAdder
+        adder2 : Sachin_32bitAdder
             port map(X => nextSequentialInstruction, Y => branchOffset, SUM => branchAddress);
 
-        mux6 : AlvarezPajaro_32bit2to1Multiplexer
+        mux6 : Sachin_32bit2to1Mux
             port map(SEL => branchControl, A => nextSequentialInstruction, B => branchAddress, O => temporalAddress1);
 
-        mux7 : AlvarezPajaro_32bit2to1Multiplexer
+        mux7 : Sachin_32bit2to1Mux
             port map(SEL => jump, A => temporalAddress1, B => jumpAddress, O => temporalAddress2);
 
-        mux8 : AlvarezPajaro_32bit2to1Multiplexer
+        mux8 : Sachin_32bit2to1Mux
             port map(SEL => jumpRegister, A => temporalAddress2, B => readData1, O => nextInstruction);
 
         -- seven segment display decoders
-        mux9 : AlvarezPajaro_32bit2to1Multiplexer
+        mux9 : Sachin_32bit2to1Mux
             port map(SEL => OS, A => returnValue, B => instruction, O => displayData);
 
-        decoder1 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder1 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(3 downto 0), DOUT => SSD(6 downto 0));
 
-        decoder2 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder2 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(7 downto 4), DOUT => SSD(13 downto 7));
 
-        decoder3 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder3 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(11 downto 8), DOUT => SSD(20 downto 14));
 
-        decoder4 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder4 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(15 downto 12), DOUT => SSD(27 downto 21));
 
-        decoder5 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder5 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(19 downto 16), DOUT => SSD(34 downto 28));
 
-        decoder6 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder6 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(23 downto 20), DOUT => SSD(41 downto 35));
 
-        decoder7 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder7 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(27 downto 24), DOUT => SSD(48 downto 42));
 
-        decoder8 : AlvarezPajaro_hexadecimalDisplayDecoder
+        decoder8 : Sachin_hexadecimalDisplayDecoder
             port map(DIN => displayData(31 downto 28), DOUT => SSD(55 downto 49));
 
         exe : process(START, CLK)
